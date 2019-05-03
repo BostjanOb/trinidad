@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Controllers;
 
-use App\User;
+use App\Server;
 use Illuminate\Http\Response;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,13 +12,40 @@ class ServerControllerTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function notAdminCanNotAddNewServer()
+    public function indexReturnsCollection()
+    {
+        factory(Server::class, 5)->create();
+
+        $this->asUser()
+            ->json('GET', '/api/servers')
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJsonFragment(['total' => 5])
+            ->assertJsonStructure(['data' => ['*' => ['id', 'name', 'ip']]]);
+    }
+
+    /** @test */
+    public function indexPerPageReturnCorrectCollection()
+    {
+        factory(Server::class, 150)->create();
+
+        $this->asUser()
+            ->json('GET', '/api/servers')
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJsonFragment(['total' => 150, 'per_page' => 25, 'last_page' => 6]);
+
+        $this->asUser()
+            ->json('GET', '/api/servers?per_page=50')
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJsonFragment(['total' => 150, 'per_page' => 50, 'last_page' => 3]);
+    }
+
+    /** @test */
+    public function createNotAdminCanNotAddNewServer()
     {
         $this->json('POST', '/api/servers', [])
             ->assertStatus(Response::HTTP_UNAUTHORIZED);
 
-        $nonAdmin = factory(User::class)->create(['role' => null]);
-        $this->actingAs($nonAdmin, 'api')
+        $this->asUser()
             ->json('POST', '/api/servers', [])
             ->assertStatus(Response::HTTP_FORBIDDEN);
     }
@@ -30,11 +57,10 @@ class ServerControllerTest extends TestCase
             'ip'   => '127.0.0.1',
             'name' => 'server',
         ];
-        $user = factory(User::class)->state('admin')->create();
-        $this->actingAs($user, 'api')
+        $this->asAdmin()
             ->json('POST', '/api/servers', $testData)
             ->assertStatus(Response::HTTP_CREATED)
-            ->assertJson($testData);
+            ->assertJsonFragment($testData);
 
         $this->assertDatabaseHas('servers', $testData);
     }
@@ -42,13 +68,87 @@ class ServerControllerTest extends TestCase
     /** @test */
     public function createValidatesData()
     {
-        $user = factory(User::class)->state('admin')->create();
-        $this->actingAs($user, 'api')
+        $this->asAdmin()
             ->json('POST', '/api/servers', ['ip' => '127.0.0.1'])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
 
-        $this->actingAs($user, 'api')
-            ->json('POST', '/api/servers', ['name' => 'server'])
+        $this->json('POST', '/api/servers', ['name' => 'server'])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    /** @test */
+    public function showReturn404ForNotFound()
+    {
+        $this->asUser()
+            ->json('GET', '/api/servers/1')
+            ->assertStatus(Response::HTTP_NOT_FOUND);
+    }
+
+    /** @test */
+    public function showReturnsCorrectJson()
+    {
+        $server = factory(Server::class)->create();
+        $this->asUser()
+            ->json('GET', '/api/servers/' . $server->id)
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJson([
+                'data' => [
+                    'id'   => $server->id,
+                    'name' => $server->name,
+                    'ip'   => $server->ip,
+                ],
+            ]);
+    }
+
+    /** @test */
+    public function updateCanOnlyBeMadeByAdmin()
+    {
+        $server = factory(Server::class)->create();
+        $this->asUser()
+            ->json('PUT', '/api/servers/' . $server->id, ['name' => 'server'])
+            ->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    /** @test */
+    public function updateUpdatesFields()
+    {
+        $this->withExceptionHandling();
+        $server = factory(Server::class)->create(['name' => 'foo']);
+        $this->asAdmin()
+            ->json('PUT', '/api/servers/' . $server->id, ['name' => 'bar'])
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJson([
+                'data' => [
+                    'id'   => $server->id,
+                    'name' => 'bar',
+                    'ip'   => $server->ip,
+                ],
+            ]);
+
+        $this->assertDatabaseHas('servers', [
+            'id'   => $server->id,
+            'name' => 'bar',
+            'ip'   => $server->ip,
+        ]);
+    }
+
+    /** @test */
+    public function deleteCanOnlyBeMadeByAdmin()
+    {
+        $server = factory(Server::class)->create();
+        $this->asUser()
+            ->json('DELETE', '/api/servers/' . $server->id)
+            ->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    /** @test */
+    public function deleteDeletesTheServer()
+    {
+        $server = factory(Server::class)->create();
+        $this->asAdmin()
+            ->json('DELETE', '/api/servers/' . $server->id)
+            ->assertStatus(Response::HTTP_NO_CONTENT);
+
+        $this->assertDatabaseMissing('servers', ['id' => $server->id]);
     }
 }
