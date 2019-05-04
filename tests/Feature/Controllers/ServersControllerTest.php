@@ -7,7 +7,7 @@ use Illuminate\Http\Response;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ServerControllerTest extends TestCase
+class ServersControllerTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -66,13 +66,21 @@ class ServerControllerTest extends TestCase
     }
 
     /** @test */
+    public function createWithoutNameSetsIpAsName()
+    {
+        $this->asAdmin()
+            ->json('POST', '/api/servers', ['ip'   => '127.0.0.1'])
+            ->assertStatus(Response::HTTP_CREATED)
+            ->assertJsonFragment(['ip'   => '127.0.0.1', 'name' => '127.0.0.1']);
+
+        $this->assertDatabaseHas('servers', ['ip'   => '127.0.0.1', 'name' => '127.0.0.1']);
+    }
+
+    /** @test */
     public function createValidatesData()
     {
         $this->asAdmin()
-            ->json('POST', '/api/servers', ['ip' => '127.0.0.1'])
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
-        $this->json('POST', '/api/servers', ['name' => 'server'])
+            ->json('POST', '/api/servers', ['name' => 'server'])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 

@@ -12,22 +12,12 @@ class SitesController extends Controller
         //
     }
 
-    public function create()
-    {
-        //
-    }
-
     public function store(Request $request)
     {
         //
     }
 
     public function show(Site $site)
-    {
-        //
-    }
-
-    public function edit(Site $site)
     {
         //
     }

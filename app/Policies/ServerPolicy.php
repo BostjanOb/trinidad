@@ -4,19 +4,9 @@ namespace App\Policies;
 
 use App\User;
 use App\Server;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ServerPolicy
+class ServerPolicy extends Policy
 {
-    use HandlesAuthorization;
-
-    public function before($user, $ability)
-    {
-        if ($user->isAdmin()) {
-            return true;
-        }
-    }
-
     public function index(User $user)
     {
         return true;

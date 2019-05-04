@@ -25,12 +25,14 @@ class ServersController extends Controller
     {
         $this->authorize('create', Server::class);
 
-        return new Resource(
-            Server::create($request->validate([
-                'name' => 'required|string|max:255',
-                'ip'   => 'required|ipv4',
-            ]))
-        );
+        $serverData = $request->validate([
+            'ip'   => 'required|ipv4',
+            'name' => 'string|max:255',
+        ]);
+
+        $serverData['name'] = $serverData['name'] ?? $serverData['ip'];
+
+        return new Resource(Server::create($serverData));
     }
 
     public function show(Server $server)
