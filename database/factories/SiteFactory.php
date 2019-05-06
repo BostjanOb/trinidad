@@ -11,6 +11,6 @@ $factory->define(Site::class, function (Faker $faker) {
             return factory(App\Server::class)->create()->id;
         },
         'name'      => $faker->domainWord,
-        'domain'    => $faker->domainName,
+        'domain'    => $faker->unique()->domainName,
     ];
 });

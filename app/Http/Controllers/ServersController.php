@@ -30,8 +30,6 @@ class ServersController extends Controller
             'name' => 'string|max:255',
         ]);
 
-        $serverData['name'] = $serverData['name'] ?? $serverData['ip'];
-
         return new Resource(Server::create($serverData));
     }
 

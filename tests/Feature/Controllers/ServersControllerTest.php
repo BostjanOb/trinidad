@@ -120,7 +120,6 @@ class ServersControllerTest extends TestCase
     /** @test */
     public function updateUpdatesFields()
     {
-        $this->withExceptionHandling();
         $server = factory(Server::class)->create(['name' => 'foo']);
         $this->asAdmin()
             ->json('PUT', '/api/servers/' . $server->id, ['name' => 'bar'])
@@ -137,6 +136,21 @@ class ServersControllerTest extends TestCase
             'id'   => $server->id,
             'name' => 'bar',
             'ip'   => $server->ip,
+        ]);
+    }
+
+    /** @test */
+    public function updateUpdatesOnlyIp()
+    {
+        $server = factory(Server::class)->create(['ip' => '1.2.3.4']);
+        $this->asAdmin()
+            ->json('PUT', '/api/servers/' . $server->id, ['ip' => '4.3.2.1'])
+            ->assertStatus(Response::HTTP_OK);
+
+        $this->assertDatabaseHas('servers', [
+            'id'   => $server->id,
+            'name' => $server->name,
+            'ip'   => '4.3.2.1',
         ]);
     }
 
