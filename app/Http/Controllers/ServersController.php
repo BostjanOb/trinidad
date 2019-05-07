@@ -46,7 +46,6 @@ class ServersController extends Controller
 
         $server->update($request->validate([
             'name' => 'string|max:255',
-            'ip'   => 'ipv4',
         ]));
 
         return new Resource($server);

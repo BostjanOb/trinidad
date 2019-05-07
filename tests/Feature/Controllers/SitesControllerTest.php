@@ -101,7 +101,7 @@ class SitesControllerTest extends TestCase
     /** @test */
     public function createAddsNewSiteAndServer()
     {
-        $this->mock(UrlResolver::class, function($mock) {
+        $this->mock(UrlResolver::class, function ($mock) {
             $mock->shouldReceive('domain')->once()->passthru();
             $mock->shouldReceive('ip')->once()->with('http://foo.bar')->andReturn('1.2.3.4');
         });
@@ -120,11 +120,11 @@ class SitesControllerTest extends TestCase
     /** @test */
     public function createAddsNewSiteAndLinkToExistingServer()
     {
-        $this->mock(UrlResolver::class, function($mock) {
+        $this->mock(UrlResolver::class, function ($mock) {
             $mock->shouldReceive('domain')->once()->passthru();
             $mock->shouldReceive('ip')->once()->with('http://foo.bar')->andReturn('1.2.3.4');
         });
-        
+
         $server = factory(Server::class)->create(['ip' => '1.2.3.4']);
 
         $this->asAdmin()
@@ -132,5 +132,61 @@ class SitesControllerTest extends TestCase
             ->assertStatus(Response::HTTP_CREATED);
 
         $this->assertDatabaseHas('sites', ['server_id' => $server->id, 'domain' => 'foo.bar']);
+    }
+
+    /** @test */
+    public function updateOnlyAdminCanUpdateSite()
+    {
+        $site = factory(Site::class)->create(['name' => 'foo']);
+
+        $this->asUser()
+            ->json('PUT', '/api/sites/' . $site->id, ['name' => 'bar'])
+            ->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    /** @test */
+    public function updateUpdatesName()
+    {
+        $site = factory(Site::class)->create(['name' => 'foo']);
+
+        $this->asAdmin()
+            ->json('PUT', '/api/sites/' . $site->id, ['name' => 'bar'])
+            ->assertStatus(Response::HTTP_OK);
+
+        $this->assertDatabaseHas('sites', ['id' => $site->id, 'name' => 'bar']);
+    }
+
+    /** @test */
+    public function updatesDontUpdateDomain()
+    {
+        $site = factory(Site::class)->create(['domain' => 'foo.bar']);
+
+        $this->asAdmin()
+            ->json('PUT', '/api/sites/' . $site->id, ['domain' => 'john.doe'])
+            ->assertStatus(Response::HTTP_OK);
+
+        $this->assertDatabaseHas('sites', ['id' => $site->id, 'domain' => $site->domain]);
+    }
+
+    /** @test */
+    public function deleteUserCantDeleteSite()
+    {
+        $site = factory(Site::class)->create();
+
+        $this->asUser()
+            ->json('DELETE', '/api/sites/' . $site->id)
+            ->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    /** @test */
+    public function deleteAdminCanDeleteSite()
+    {
+        $site = factory(Site::class)->create();
+
+        $this->asAdmin()
+            ->json('DELETE', '/api/sites/' . $site->id)
+            ->assertStatus(Response::HTTP_NO_CONTENT);
+
+        $this->assertDatabaseMissing('sites', ['id' => $site->id]);
     }
 }

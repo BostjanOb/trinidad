@@ -69,11 +69,11 @@ class ServersControllerTest extends TestCase
     public function createWithoutNameSetsIpAsName()
     {
         $this->asAdmin()
-            ->json('POST', '/api/servers', ['ip'   => '127.0.0.1'])
+            ->json('POST', '/api/servers', ['ip' => '127.0.0.1'])
             ->assertStatus(Response::HTTP_CREATED)
-            ->assertJsonFragment(['ip'   => '127.0.0.1', 'name' => '127.0.0.1']);
+            ->assertJsonFragment(['ip' => '127.0.0.1', 'name' => '127.0.0.1']);
 
-        $this->assertDatabaseHas('servers', ['ip'   => '127.0.0.1', 'name' => '127.0.0.1']);
+        $this->assertDatabaseHas('servers', ['ip' => '127.0.0.1', 'name' => '127.0.0.1']);
     }
 
     /** @test */
@@ -140,7 +140,7 @@ class ServersControllerTest extends TestCase
     }
 
     /** @test */
-    public function updateUpdatesOnlyIp()
+    public function updateDontUpdatesIp()
     {
         $server = factory(Server::class)->create(['ip' => '1.2.3.4']);
         $this->asAdmin()
@@ -150,7 +150,7 @@ class ServersControllerTest extends TestCase
         $this->assertDatabaseHas('servers', [
             'id'   => $server->id,
             'name' => $server->name,
-            'ip'   => '4.3.2.1',
+            'ip'   => $server->ip,
         ]);
     }
 
