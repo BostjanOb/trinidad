@@ -1,4 +1,4 @@
-# Trinidad
+# Sextant
 
 [![Build Status](https://travis-ci.org/BostjanOb/trinidad.svg?branch=master)](https://travis-ci.org/BostjanOb/trinidad)
 
