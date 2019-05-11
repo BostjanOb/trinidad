@@ -1,5 +1,19 @@
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&subset=latin-ext');
+
 @tailwind base;
 
 @tailwind components;
+
+svg {
+  @apply .fill-current .stroke-current;
+}
+
+.feather {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
 
 @tailwind utilities;
