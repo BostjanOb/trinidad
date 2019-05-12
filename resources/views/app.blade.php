@@ -41,18 +41,28 @@
             <div class="border-b">
                 <div class="container flex justify-between py-2">
                     <nav class="flex">
-                        <a href="#" class="border-b border-blue-500 text-blue-500 flex items-center px-2">
+                        <router-link
+                                :to="{name: 'dashboard'}"
+                                exact
+                                class="flex items-center px-2"
+                                active-class="border-b border-blue-500 text-blue-500">
                             {!! $feather('home', 4, 'mr-1') !!} Dashboard
-                        </a>
-                        <a href="#" class="flex items-center px-2 mx-4">
+                        </router-link>
+
+                        <router-link :to="{name: 'sites.index'}" class="flex items-center px-2 mx-4"
+                                     active-class="border-b border-blue-500 text-blue-500">
                             {!! $feather('sidebar', 4, 'mr-1') !!} Sites
-                        </a>
-                        <a href="#" class="flex items-center px-2 mr-4">
-                            {!! $feather('server', 4, 'mr-1') !!}Servers
-                        </a>
-                        <a href="#" class="flex items-center px-2">
-                            {!! $feather('users', 4, 'mr-1') !!}Users
-                        </a>
+                        </router-link>
+
+                        <router-link :to="{name: 'servers.index'}" class="flex items-center px-2 mx-4"
+                                     active-class="border-b border-blue-500 text-blue-500">
+                            {!! $feather('server', 4, 'mr-1') !!} Servers
+                        </router-link>
+
+                        <router-link :to="{name: 'users'}" class="flex items-center px-2 mx-4"
+                                     active-class="border-b border-blue-500 text-blue-500">
+                            {!! $feather('users', 4, 'mr-1') !!} Users
+                        </router-link>
                     </nav>
                     <div>
                         <form method="POST">
@@ -64,20 +74,7 @@
         </header>
 
         <div class="py-2 container">
-            <div class="flex -mx-2">
-                <div class="w-1/2 px-2">
-                    <div class="text-center bg-white shadow py-4 leading-tight">
-                        <div class="font-semibold text-4xl">19</div>
-                        <div class="text-gray-700">sites</div>
-                    </div>
-                </div>
-                <div class="w-1/2 px-2">
-                    <div class="text-center bg-white shadow py-4 leading-tight">
-                        <div class="font-semibold text-4xl">3</div>
-                        <div class="text-gray-700">sites</div>
-                    </div>
-                </div>
-            </div>
+            <router-view></router-view>
         </div>
     </div>
 </body>

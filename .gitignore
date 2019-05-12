@@ -4,6 +4,8 @@
 /storage/*.key
 /public/css
 /public/js
+/public/images/fa.svg
+/public/images/feather.svg
 /vendor
 .env
 .phpunit.result.cache

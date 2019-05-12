@@ -17,6 +17,9 @@ module.exports = {
     'solid.svg': [],
     'feather-sprite.svg': [
       'home',
+      'edit',
+      'key',
+      'plus',
       'server',
       'sidebar',
       'users',
