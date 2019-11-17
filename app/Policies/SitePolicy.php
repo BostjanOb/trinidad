@@ -7,7 +7,7 @@ use App\User;
 
 class SitePolicy extends Policy
 {
-    public function index(User $user)
+    public function viewAny(User $user)
     {
         return true;
     }

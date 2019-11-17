@@ -11,12 +11,15 @@ use Illuminate\Validation\Rule;
 
 class UsersController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(User::class, 'user');
+    }
+
     public function index(Request $request)
     {
-        $this->authorize('index', User::class);
-
         $users = User::paginate(
-            (int)$request->input('per_page', 25)
+            (int) $request->input('per_page', 25)
         );
 
         return new ResourceCollection($users);
@@ -24,8 +27,6 @@ class UsersController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('create', User::class);
-
         $userData = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
@@ -37,15 +38,11 @@ class UsersController extends Controller
 
     public function show(User $user)
     {
-        $this->authorize('view', $user);
-
         return new Resource($user);
     }
 
     public function update(Request $request, User $user)
     {
-        $this->authorize('update', $user);
-
         $userData = $request->validate([
             'name'     => 'string|max:255',
             'email'    => ['email', Rule::unique('users')->ignore($user)],
@@ -59,8 +56,6 @@ class UsersController extends Controller
 
     public function destroy(User $user)
     {
-        $this->authorize('delete', $user);
-
         $user->delete();
 
         return \Response::make(null, Response::HTTP_NO_CONTENT);

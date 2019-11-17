@@ -13,16 +13,19 @@ use Illuminate\Http\Response;
 
 class SitesController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Site::class, 'site');
+    }
+
     public function index(Request $request)
     {
-        $this->authorize('index', Site::class);
-
         $sites = Site::with('server')
             ->when($request->has('server'), function (Builder $query) use ($request) {
                 return $query->where('server_id', $request->input('server'));
             })
             ->paginate(
-                (int)$request->input('per_page', 25)
+                (int) $request->input('per_page', 25)
             );
 
         return new SiteResourceCollection($sites);
@@ -30,8 +33,6 @@ class SitesController extends Controller
 
     public function store(Request $request, UrlResolver $urlResolver)
     {
-        $this->authorize('create', Site::class);
-
         $request->validate([
             'url'  => 'required|url',
             'name' => 'string|max:255',
@@ -52,8 +53,6 @@ class SitesController extends Controller
 
     public function show(Site $site)
     {
-        $this->authorize('view', $site);
-
         $site->load('server');
 
         return new Resource($site);
@@ -61,8 +60,6 @@ class SitesController extends Controller
 
     public function update(Request $request, Site $site)
     {
-        $this->authorize('update', $site);
-
         $site->update($request->validate(['name' => 'string|max:255']));
 
         return new Resource($site);
@@ -70,8 +67,6 @@ class SitesController extends Controller
 
     public function destroy(Site $site)
     {
-        $this->authorize('delete', $site);
-
         $site->delete();
 
         return \Response::make(null, Response::HTTP_NO_CONTENT);
