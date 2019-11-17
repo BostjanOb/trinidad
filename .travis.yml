@@ -1,13 +1,20 @@
 language: php
 
-php:
-  - 7.2
-  - 7.3
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.2
+    - php: 7.3
+    - php: 7.4snapshot
+
+cache:
+  directories:
+    - $HOME/.composer/cache
 
 before_script:
+  - phpenv config-rm xdebug.ini || true
   - composer self-update
   - composer install --no-interaction
   - cp .env.travis .env
 
-script:
-  - vendor/bin/phpunit --coverage-text
+script: vendor/bin/phpunit --coverage-text

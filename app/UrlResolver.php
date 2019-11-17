@@ -2,9 +2,13 @@
 
 namespace App;
 
+use Pdp\CurlHttpClient;
+use Pdp\Manager;
+use Pdp\Rules;
+
 class UrlResolver
 {
-    public function domain($url): string
+    public function host($url): string
     {
         return $this->getUrlComponents($url)['host'];
     }
@@ -12,6 +16,13 @@ class UrlResolver
     public function ip(string $url): string
     {
         return gethostbyname($this->getUrlComponents($url)['host']);
+    }
+
+    public function domain(string $url)
+    {
+        $manager = new Manager(\Cache::store(), new CurlHttpClient());
+
+        return $manager->getRules()->resolve($this->host($url))->getRegistrableDomain();
     }
 
     private function getUrlComponents(string $url): array

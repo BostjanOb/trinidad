@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain;
 use App\Http\Resources\SiteResourceCollection;
 use App\Server;
 use App\Site;
@@ -38,14 +39,19 @@ class SitesController extends Controller
             'name' => 'string|max:255',
         ]);
 
-        $server = Server::firstOrCreate(['ip' => $urlResolver->ip($request->input('url'))]);
-
         $domain = $urlResolver->domain($request->input('url'));
+        $host = $urlResolver->host($request->input('url'));
+        $ip = $urlResolver->ip($request->input('url'));
+
+        $server = Server::firstOrCreate(['ip' => $ip]);
+        $domain = Domain::firstOrCreate(['domain' => $domain]);
+
         $site = Site::make([
-            'name'   => $request->input('name', $domain),
-            'domain' => $domain,
+            'name' => $request->input('name', $host),
+            'host' => $host,
         ]);
         $site->server()->associate($server);
+        $site->domain()->associate($domain);
         $site->save();
 
         return new Resource($site);

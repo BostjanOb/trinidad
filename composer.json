@@ -6,6 +6,7 @@
     "require": {
         "php": "^7.2",
         "fideloper/proxy": "^4.0",
+        "jeremykendall/php-domain-parser": "^5.5",
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0"
     },

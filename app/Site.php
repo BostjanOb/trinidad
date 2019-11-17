@@ -13,4 +13,9 @@ class Site extends Model
     {
         return $this->belongsTo(Server::class);
     }
+
+    public function domain(): BelongsTo
+    {
+        return $this->belongsTo(Domain::class);
+    }
 }

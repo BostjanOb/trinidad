@@ -10,7 +10,10 @@ $factory->define(Site::class, function (Faker $faker) {
         'server_id' => function () {
             return factory(App\Server::class)->create()->id;
         },
+        'domain_id' => function () {
+            return factory(\App\Domain::class)->create()->id;
+        },
         'name'      => $faker->domainWord,
-        'domain'    => $faker->unique()->domainName,
+        'host'      => $faker->unique()->domainName,
     ];
 });
