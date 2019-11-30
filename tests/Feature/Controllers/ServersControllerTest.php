@@ -97,15 +97,17 @@ class ServersControllerTest extends TestCase
     {
         $server = factory(Server::class)->create();
         $this->asUser()
-            ->json('GET', '/api/servers/' . $server->id)
+            ->json('GET', '/api/servers/'.$server->id)
             ->assertStatus(Response::HTTP_OK)
-            ->assertJson([
-                'data' => [
-                    'id'   => $server->id,
-                    'name' => $server->name,
-                    'ip'   => $server->ip,
-                ],
-            ]);
+            ->assertJson(
+                [
+                    'data' => [
+                        'id'   => $server->id,
+                        'name' => $server->name,
+                        'ip'   => $server->ip,
+                    ],
+                ]
+            );
     }
 
     /** @test */
@@ -113,7 +115,7 @@ class ServersControllerTest extends TestCase
     {
         $server = factory(Server::class)->create();
         $this->asUser()
-            ->json('PUT', '/api/servers/' . $server->id, ['name' => 'server'])
+            ->json('PUT', '/api/servers/'.$server->id, ['name' => 'server'])
             ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
@@ -122,21 +124,26 @@ class ServersControllerTest extends TestCase
     {
         $server = factory(Server::class)->create(['name' => 'foo']);
         $this->asAdmin()
-            ->json('PUT', '/api/servers/' . $server->id, ['name' => 'bar'])
+            ->json('PUT', '/api/servers/'.$server->id, ['name' => 'bar'])
             ->assertStatus(Response::HTTP_OK)
-            ->assertJson([
-                'data' => [
-                    'id'   => $server->id,
-                    'name' => 'bar',
-                    'ip'   => $server->ip,
-                ],
-            ]);
+            ->assertJson(
+                [
+                    'data' => [
+                        'id'   => $server->id,
+                        'name' => 'bar',
+                        'ip'   => $server->ip,
+                    ],
+                ]
+            );
 
-        $this->assertDatabaseHas('servers', [
-            'id'   => $server->id,
-            'name' => 'bar',
-            'ip'   => $server->ip,
-        ]);
+        $this->assertDatabaseHas(
+            'servers',
+            [
+                'id'   => $server->id,
+                'name' => 'bar',
+                'ip'   => $server->ip,
+            ]
+        );
     }
 
     /** @test */
@@ -144,14 +151,17 @@ class ServersControllerTest extends TestCase
     {
         $server = factory(Server::class)->create(['ip' => '1.2.3.4']);
         $this->asAdmin()
-            ->json('PUT', '/api/servers/' . $server->id, ['ip' => '4.3.2.1'])
+            ->json('PUT', '/api/servers/'.$server->id, ['ip' => '4.3.2.1'])
             ->assertStatus(Response::HTTP_OK);
 
-        $this->assertDatabaseHas('servers', [
-            'id'   => $server->id,
-            'name' => $server->name,
-            'ip'   => $server->ip,
-        ]);
+        $this->assertDatabaseHas(
+            'servers',
+            [
+                'id'   => $server->id,
+                'name' => $server->name,
+                'ip'   => $server->ip,
+            ]
+        );
     }
 
     /** @test */
@@ -159,7 +169,7 @@ class ServersControllerTest extends TestCase
     {
         $server = factory(Server::class)->create();
         $this->asUser()
-            ->json('DELETE', '/api/servers/' . $server->id)
+            ->json('DELETE', '/api/servers/'.$server->id)
             ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
@@ -168,7 +178,7 @@ class ServersControllerTest extends TestCase
     {
         $server = factory(Server::class)->create();
         $this->asAdmin()
-            ->json('DELETE', '/api/servers/' . $server->id)
+            ->json('DELETE', '/api/servers/'.$server->id)
             ->assertStatus(Response::HTTP_NO_CONTENT);
 
         $this->assertDatabaseMissing('servers', ['id' => $server->id]);

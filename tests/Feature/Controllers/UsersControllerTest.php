@@ -81,12 +81,12 @@ class UsersControllerTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->be($user, 'api')
-            ->json('GET', '/api/users/' . $user->id)
+            ->json('GET', '/api/users/'.$user->id)
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonFragment(['id' => $user->id, 'email' => $user->email]);
 
         $this->asUser()
-            ->json('GET', '/api/users/' . $user->id)
+            ->json('GET', '/api/users/'.$user->id)
             ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
@@ -96,7 +96,7 @@ class UsersControllerTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->asAdmin()
-            ->json('GET', '/api/users/' . $user->id)
+            ->json('GET', '/api/users/'.$user->id)
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonFragment(['id' => $user->id, 'email' => $user->email]);
     }
@@ -107,12 +107,12 @@ class UsersControllerTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->be($user, 'api')
-            ->json('PUT', 'api/users/' . $user->id, ['name' => 'foo'])
+            ->json('PUT', 'api/users/'.$user->id, ['name' => 'foo'])
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonFragment(['name' => 'foo']);
 
         $this->asUser()
-            ->json('PUT', 'api/users/' . $user->id, ['name' => 'foo'])
+            ->json('PUT', 'api/users/'.$user->id, ['name' => 'foo'])
             ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
@@ -122,7 +122,7 @@ class UsersControllerTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->asAdmin()
-            ->json('PUT', 'api/users/' . $user->id, ['name' => 'foo'])
+            ->json('PUT', 'api/users/'.$user->id, ['name' => 'foo'])
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonFragment(['name' => 'foo']);
     }
@@ -133,11 +133,11 @@ class UsersControllerTest extends TestCase
         $users = factory(User::class, 2)->create();
 
         $this->asAdmin()
-            ->json('PUT', 'api/users/' . $users[0]->id, ['email' => $users[1]->email])
+            ->json('PUT', 'api/users/'.$users[0]->id, ['email' => $users[1]->email])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $this->asAdmin()
-            ->json('PUT', 'api/users/' . $users[0]->id, ['email' => $users[0]->email])
+            ->json('PUT', 'api/users/'.$users[0]->id, ['email' => $users[0]->email])
             ->assertStatus(Response::HTTP_OK);
     }
 
@@ -148,13 +148,13 @@ class UsersControllerTest extends TestCase
 
         $this->be($user, 'api');
 
-        $this->json('PUT', 'api/users/' . $user->id, ['name' => 'foo'])
+        $this->json('PUT', 'api/users/'.$user->id, ['name' => 'foo'])
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonFragment(['name' => 'foo']);
 
         $this->assertDatabaseHas('users', ['id' => $user->id, 'name' => 'foo', 'password' => $user->password]);
 
-        $this->json('PUT', 'api/users/' . $user->id, ['password' => 'foo'])
+        $this->json('PUT', 'api/users/'.$user->id, ['password' => 'foo'])
             ->assertStatus(Response::HTTP_OK);
 
         $this->assertDatabaseMissing('users', ['id' => $user->id, 'name' => 'foo', 'password' => $user->password]);
@@ -166,11 +166,11 @@ class UsersControllerTest extends TestCase
         $user = factory(User::class)->create();
 
         $this->asUser()
-            ->json('DELETE', '/api/users/' . $user->id)
+            ->json('DELETE', '/api/users/'.$user->id)
             ->assertStatus(Response::HTTP_FORBIDDEN);
 
         $this->asAdmin()
-            ->json('DELETE', '/api/users/' . $user->id)
+            ->json('DELETE', '/api/users/'.$user->id)
             ->assertStatus(Response::HTTP_NO_CONTENT);
 
         $this->assertDatabaseMissing('users', ['id' => $user->id]);

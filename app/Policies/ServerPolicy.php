@@ -31,4 +31,14 @@ class ServerPolicy extends Policy
     {
         return false;
     }
+
+    public function restore(User $user, Server $domain)
+    {
+        return false;
+    }
+
+    public function forceDelete(User $user, Server $domain)
+    {
+        return false;
+    }
 }

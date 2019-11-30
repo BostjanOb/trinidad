@@ -31,4 +31,14 @@ class SitePolicy extends Policy
     {
         return false;
     }
+
+    public function restore(User $user, Site $domain)
+    {
+        return false;
+    }
+
+    public function forceDelete(User $user, Site $domain)
+    {
+        return false;
+    }
 }

@@ -30,4 +30,14 @@ class UserPolicy extends Policy
     {
         return false;
     }
+
+    public function restore(User $user, User $domain)
+    {
+        return false;
+    }
+
+    public function forceDelete(User $user, User $domain)
+    {
+        return false;
+    }
 }

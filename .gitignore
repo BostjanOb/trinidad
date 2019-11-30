@@ -7,6 +7,7 @@
 /public/images/fa.svg
 /public/images/feather.svg
 /vendor
+/tests/report
 .env
 .phpunit.result.cache
 Homestead.json

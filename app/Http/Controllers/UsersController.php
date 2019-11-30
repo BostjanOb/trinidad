@@ -19,7 +19,7 @@ class UsersController extends Controller
     public function index(Request $request)
     {
         $users = User::paginate(
-            (int) $request->input('per_page', 25)
+            (int)$request->input('per_page', 25)
         );
 
         return new ResourceCollection($users);
@@ -27,11 +27,13 @@ class UsersController extends Controller
 
     public function store(Request $request)
     {
-        $userData = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
-            'password' => 'required|string',
-        ]);
+        $userData = $request->validate(
+            [
+                'name'     => 'required|string|max:255',
+                'email'    => 'required|email|unique:users,email',
+                'password' => 'required|string',
+            ]
+        );
 
         return new Resource(User::create($userData));
     }
@@ -43,11 +45,13 @@ class UsersController extends Controller
 
     public function update(Request $request, User $user)
     {
-        $userData = $request->validate([
-            'name'     => 'string|max:255',
-            'email'    => ['email', Rule::unique('users')->ignore($user)],
-            'password' => 'string',
-        ]);
+        $userData = $request->validate(
+            [
+                'name'     => 'string|max:255',
+                'email'    => ['email', Rule::unique('users')->ignore($user)],
+                'password' => 'string',
+            ]
+        );
 
         $user->update($userData);
 

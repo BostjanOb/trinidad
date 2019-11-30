@@ -4,7 +4,6 @@ namespace App;
 
 use Pdp\CurlHttpClient;
 use Pdp\Manager;
-use Pdp\Rules;
 
 class UrlResolver
 {

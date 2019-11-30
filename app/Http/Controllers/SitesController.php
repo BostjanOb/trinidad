@@ -22,11 +22,14 @@ class SitesController extends Controller
     public function index(Request $request)
     {
         $sites = Site::with('server')
-            ->when($request->has('server'), function (Builder $query) use ($request) {
-                return $query->where('server_id', $request->input('server'));
-            })
+            ->when(
+                $request->has('server'),
+                function (Builder $query) use ($request) {
+                    return $query->where('server_id', $request->input('server'));
+                }
+            )
             ->paginate(
-                (int) $request->input('per_page', 25)
+                (int)$request->input('per_page', 25)
             );
 
         return new SiteResourceCollection($sites);
@@ -34,10 +37,12 @@ class SitesController extends Controller
 
     public function store(Request $request, UrlResolver $urlResolver)
     {
-        $request->validate([
-            'url'  => 'required|url',
-            'name' => 'string|max:255',
-        ]);
+        $request->validate(
+            [
+                'url'  => 'required|url',
+                'name' => 'string|max:255',
+            ]
+        );
 
         $domain = $urlResolver->domain($request->input('url'));
         $host = $urlResolver->host($request->input('url'));
@@ -46,10 +51,12 @@ class SitesController extends Controller
         $server = Server::firstOrCreate(['ip' => $ip]);
         $domain = Domain::firstOrCreate(['domain' => $domain]);
 
-        $site = Site::make([
-            'name' => $request->input('name', $host),
-            'host' => $host,
-        ]);
+        $site = Site::make(
+            [
+                'name' => $request->input('name', $host),
+                'host' => $host,
+            ]
+        );
         $site->server()->associate($server);
         $site->domain()->associate($domain);
         $site->save();

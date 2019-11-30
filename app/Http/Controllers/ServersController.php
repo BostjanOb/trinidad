@@ -18,7 +18,7 @@ class ServersController extends Controller
     public function index(Request $request)
     {
         $servers = Server::paginate(
-            (int) $request->input('per_page', 25)
+            (int)$request->input('per_page', 25)
         );
 
         return new ResourceCollection($servers);
@@ -26,10 +26,12 @@ class ServersController extends Controller
 
     public function store(Request $request)
     {
-        $serverData = $request->validate([
-            'ip'   => 'required|ipv4',
-            'name' => 'string|max:255',
-        ]);
+        $serverData = $request->validate(
+            [
+                'ip'   => 'required|ipv4',
+                'name' => 'string|max:255',
+            ]
+        );
 
         return new Resource(Server::create($serverData));
     }
@@ -41,9 +43,13 @@ class ServersController extends Controller
 
     public function update(Request $request, Server $server)
     {
-        $server->update($request->validate([
-            'name' => 'string|max:255',
-        ]));
+        $server->update(
+            $request->validate(
+                [
+                    'name' => 'string|max:255',
+                ]
+            )
+        );
 
         return new Resource($server);
     }
