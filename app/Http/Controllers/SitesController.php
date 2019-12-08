@@ -24,9 +24,7 @@ class SitesController extends Controller
         $sites = Site::with('server')
             ->when(
                 $request->has('server'),
-                function (Builder $query) use ($request) {
-                    return $query->where('server_id', $request->input('server'));
-                }
+                fn(Builder $query) => $query->where('server_id', $request->input('server'))
             )
             ->paginate(
                 (int)$request->input('per_page', 25)
