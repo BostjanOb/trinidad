@@ -4,7 +4,7 @@
     "description": "Web apps map",
     "license": "MIT",
     "require": {
-        "php": "^7.3",
+        "php": "^7.4",
         "fideloper/proxy": "^4.0",
         "jeremykendall/php-domain-parser": "^5.5",
         "laravel/framework": "^6.0",
