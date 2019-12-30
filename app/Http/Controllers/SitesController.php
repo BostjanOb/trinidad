@@ -42,12 +42,8 @@ class SitesController extends Controller
             ]
         );
 
-        $domain = $urlResolver->domain($request->input('url'));
         $host = $urlResolver->host($request->input('url'));
-        $ip = $urlResolver->ip($request->input('url'));
-
-        $server = Server::firstOrCreate(['ip' => $ip]);
-        $domain = Domain::firstOrCreate(['domain' => $domain]);
+        $domain = Domain::firstOrCreate(['domain' => $urlResolver->domain($request->input('url'))]);
 
         $site = Site::make(
             [
@@ -55,7 +51,7 @@ class SitesController extends Controller
                 'host' => $host,
             ]
         );
-        $site->server()->associate($server);
+        $site->associateServerFromIp($urlResolver->ip($request->input('url')));
         $site->domain()->associate($domain);
         $site->save();
 

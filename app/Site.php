@@ -18,4 +18,12 @@ class Site extends Model
     {
         return $this->belongsTo(Domain::class);
     }
+
+    public function associateServerFromIp($ip): self
+    {
+        $server = Server::firstOrCreate(['ip' => $ip]);
+        $this->server()->associate($server);
+
+        return $this;
+    }
 }
