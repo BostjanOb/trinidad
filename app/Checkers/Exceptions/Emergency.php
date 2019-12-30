@@ -2,10 +2,10 @@
 
 namespace App\Checkers\Exceptions;
 
-class Alert extends CheckerException
+class Emergency extends CheckerException
 {
     public static function create(string $message)
     {
-        return new self($message, CheckerException::ALERT);
+        return new self($message, CheckerException::EMERGENCY);
     }
 }

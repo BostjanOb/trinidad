@@ -5,6 +5,7 @@ namespace App;
 use App\Checkers\Exceptions\CheckerException;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Checker extends Model
 {
@@ -16,6 +17,11 @@ class Checker extends Model
         'last_run',
         'next_run',
     ];
+
+    public function logs(): HasMany
+    {
+        return $this->hasMany(CheckerLog::class);
+    }
 
     public function checkable()
     {
@@ -32,14 +38,31 @@ class Checker extends Model
         $checker = $this->checker();
 
         try {
-            $checker->check($this->checkable, $this->arguments);
+            $checker->check($this->checkable, $this->arguments ?? []);
             // todo: everything ok, clear old exceptions
         } catch (CheckerException $e) {
-            // todo: handle exception
+            $this->handleException($e);
         }
 
         $this->next_run = $checker->nextRun() ?? $this->calculateNextRun();
         $this->save();
+    }
+
+    private function handleException(CheckerException $e)
+    {
+        $lastLog = $this->logs()->latestUnresolved()->first();
+
+        if ($lastLog !== null
+            && $lastLog->level == $e->getCode()
+            && $lastLog->message == $e->getMessage()) {
+            return;
+        }
+
+        CheckerLog::create([
+            'checker_id' => $this->id,
+            'message'    => $e->getMessage(),
+            'level'      => $e->getCode(),
+        ]);
     }
 
     private function calculateNextRun(): Carbon
