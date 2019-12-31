@@ -135,4 +135,87 @@ class CheckerTest extends TestCase
 
         $this->assertEquals(2, CheckerLog::count());
     }
+
+    /** @test */
+    public function markResolvedSingleFailLog()
+    {
+        $testDate = now();
+        Carbon::setTestNow($testDate);
+        $this->app->instance('TestChecker', new class implements \App\Checkers\Checker {
+            public static int $counter = 0;
+
+            public function check($model, array $arguments)
+            {
+                self::$counter++;
+                if (self::$counter == 1) {
+                    throw Alert::create('Test alert');
+                }
+            }
+
+            public function nextRun(): ?Carbon
+            {
+                return null;
+            }
+        });
+
+        $checker = factory(Checker::class)->create(['checker' => 'TestChecker']);
+        $checker->check();
+        $checker->check();
+        $checker->check();
+
+        $this->assertEquals(1, CheckerLog::count());
+
+        $this->assertDatabaseHas('checker_logs', [
+            'checker_id'  => $checker->id,
+            'level'       => CheckerException::ALERT,
+            'resolved_at' => $testDate,
+        ]);
+    }
+
+    /** @test */
+    public function markResolvedManyLogs()
+    {
+        $testDate = now();
+        Carbon::setTestNow($testDate);
+        $this->app->instance('TestChecker', new class implements \App\Checkers\Checker {
+            public static int $counter = 0;
+
+            public function check($model, array $arguments)
+            {
+                self::$counter++;
+                if (self::$counter == 1) {
+                    throw Alert::create('Test alert');
+                }
+                if (self::$counter == 2) {
+                    throw Emergency::create('Test emergency');
+                }
+            }
+
+            public function nextRun(): ?Carbon
+            {
+                return null;
+            }
+        });
+
+        $checker = factory(Checker::class)->create(['checker' => 'TestChecker']);
+        $checker->check();
+        $checker->check();
+        $checker->check();
+        $checker->check();
+        $checker->check();
+
+        $this->assertEquals(2, CheckerLog::count());
+
+        $this->assertDatabaseHas('checker_logs', [
+            'checker_id'  => $checker->id,
+            'level'       => CheckerException::ALERT,
+            'resolved_at' => $testDate,
+        ]);
+
+        $this->assertDatabaseHas('checker_logs', [
+            'checker_id'  => $checker->id,
+            'level'       => CheckerException::EMERGENCY,
+            'resolved_at' => $testDate,
+        ]);
+    }
 }

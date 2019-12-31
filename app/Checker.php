@@ -39,13 +39,18 @@ class Checker extends Model
 
         try {
             $checker->check($this->checkable, $this->arguments ?? []);
-            // todo: everything ok, clear old exceptions
+            $this->handleSuccess();
         } catch (CheckerException $e) {
             $this->handleException($e);
         }
 
         $this->next_run = $checker->nextRun() ?? $this->calculateNextRun();
         $this->save();
+    }
+
+    private function handleSuccess()
+    {
+        $this->logs()->unresolved()->update(['resolved_at' => now()]);
     }
 
     private function handleException(CheckerException $e)
@@ -69,5 +74,4 @@ class Checker extends Model
     {
         return now()->addMinutes($this->interval);
     }
-
 }

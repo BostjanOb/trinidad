@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Checkers\Site;
+namespace Tests\Unit\Checkers\Site;
 
 use App\Checkers\Site\HostingServer;
 use App\Server;
@@ -45,5 +45,11 @@ class DomainsControllerTest extends TestCase
         app(HostingServer::class)->check($site);
 
         $this->assertDatabaseHas('sites', ['id' => $site->id, 'server_id' => $server1->id]);
+    }
+
+    /** @test */
+    public function nullForNextCheck()
+    {
+        $this->assertNull(app(HostingServer::class)->nextRun());
     }
 }

@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class ExpireDate implements Checker
 {
-    public function check($model)
+    public function check($model, array $arguments)
     {
         // TODO: Implement check() method.
     }
