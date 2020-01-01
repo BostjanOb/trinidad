@@ -21,7 +21,7 @@ jobs:
         uses: shivammathur/setup-php@v1
         with:
           php-version: '7.4'
-          extension: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
+          extension: mbstring, intl, dom, curl, libxml, pdo, sqlite, pdo_sqlite, soap, iconv
           coverage: none
 
       - name: PHP info
