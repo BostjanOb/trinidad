@@ -20,12 +20,9 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v1
         with:
-          php-version: '7.4'
-          extension: mbstring, intl, dom, curl, libxml, pdo, sqlite, pdo_sqlite, soap, iconv
+          php-version: 7.4
+          extension-csv: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
           coverage: none
-
-      - name: PHP info
-        run: php -i
 
       - name: Install dependencies
         run: composer install
