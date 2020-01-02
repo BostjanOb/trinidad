@@ -15,7 +15,7 @@ class CheckChecker implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private Checker $checker;
+    public Checker $checker;
 
     public function __construct(Checker $checker)
     {

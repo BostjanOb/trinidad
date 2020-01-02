@@ -12,5 +12,6 @@ $factory->define(Checker::class, function (Faker $faker) {
         'checkable_type' => get_class($site),
         'checkable_id'   => $site->id,
         'arguments'      => [],
+        'checker'        => 'TestChecker',
     ];
 });

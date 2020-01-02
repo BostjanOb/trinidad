@@ -13,7 +13,7 @@ class CheckersRun extends Command
 
     public function handle()
     {
-        Checker::where('next_run', '<', now())
+        Checker::where('next_run', '<=', now())
             ->each(fn(Checker $checker) => CheckChecker::dispatch($checker));
     }
 }
