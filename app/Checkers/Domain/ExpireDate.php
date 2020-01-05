@@ -14,6 +14,6 @@ class ExpireDate implements Checker
 
     public function nextRun(): ?Carbon
     {
-        // TODO: Implement nextRun() method.
+        return null;
     }
 }

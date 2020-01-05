@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Checker;
 use App\CheckerLog;
 use App\Checkers\Exceptions\CheckerException;
+use App\Events\CheckerResolved;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -37,12 +38,17 @@ class CheckChecker implements ShouldQueue
         $this->checker->save();
     }
 
-    private function handleSuccess()
+    private function handleSuccess(): void
     {
-        $this->checker->logs()->unresolved()->update(['resolved_at' => now()]);
+        $this->checker->logs()->unresolved()->get()->each(function (CheckerLog $checkerLog) {
+            $checkerLog->resolved_at = now();
+            $checkerLog->save();
+
+            event(new CheckerResolved($checkerLog));
+        });
     }
 
-    private function handleException(CheckerException $e)
+    private function handleException(CheckerException $e): void
     {
         $lastLog = $this->checker->logs()->latestUnresolved()->first();
 
@@ -52,10 +58,12 @@ class CheckChecker implements ShouldQueue
             return;
         }
 
-        CheckerLog::create([
+        $checkerLog = CheckerLog::create([
             'checker_id' => $this->checker->id,
             'message'    => $e->getMessage(),
             'level'      => $e->getCode(),
         ]);
+
+        event(new \App\Events\CheckerException($checkerLog));
     }
 }
